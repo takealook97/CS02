@@ -33,6 +33,8 @@
 
 - **첫번째 노드**가 무엇인지 의미하는 정보를 **Head field**에 저장한다.
 
+---
+
 # 데이터 추가와 제거
 
 ## insert
@@ -45,7 +47,6 @@ Node temp = new Node(input);
 temp.next = head;
 head = temp;
 ```
-
 
 ### 중간에 추가
 
@@ -62,8 +63,6 @@ Node newNode = new Node(input);
 temp1.next = newNode;
 newNode.next = temp2;
 ```
-
----
 
 ## delete
 
