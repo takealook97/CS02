@@ -107,28 +107,81 @@ delete tobedeleted;
 ---
 
 # Mission 1. 참조, 연속배열, 데이터구조
+## Main 클래스
+```java
+public class Main {
+    public static void main(String[] args) {
+        String[] titles = {"제목01", "제목02", "제목03", "제목04", "제목05", "제목06",
+                "제목07", "제목08", "제목09", "제목10", "제목11", "제목12", "제목13"};
+        LinkedHashMap<String, Node> videoMap = new LinkedHashMap<>();
+        for (int i = 0; i < 13; i++) {
+            Node newNode = new Node(titles[i], null);
+            videoMap.put(newNode.id, newNode);
+        }
+        System.out.println("---영상클립---");
+        for (Node node : videoMap.values()) {
+            node.print();
+        }
+    }
+}
+```
+- 제목 1~13을 titles 배열에 넣어준다.
+- Node클래스의 newNode 참조변수를 생성하고 헤드노드는 비워둔다.
+- 해시맵의 key에 생성된 아이디를, value에 새로운 노드를 넣는다.
+- 반복문을 통해 node클래스의 print() 메서드의 형식대로 출력한다.
 
-## 학습목표
+## Node 클래스
+```java
+public class Node {
+    String title;
+    String id;
+    int time;
+    Node next;
+    HashSet<String> idVerification = new HashSet<>();
 
-- 영상정보를 보관하는 데이터구조 선언
+    public Node(String title, Node next) {
+        this.title = title;
+        id = makeId();
+        time = makeTime();
+        this.next = next;
+    }
 
-- 연속배열에 데이터 인스턴스 생성
+    String makeId() {
+        Random rd = new Random();
+        while (true) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 8; i++) {
+                int alphabet = rd.nextInt(26) + 'a';
+                sb.append((char) alphabet);
+            }
+            if (!idVerification.contains(sb.toString())) {
+                idVerification.add(sb.toString());
+                return sb.toString();
+            }
+        }
+    }
 
-- 데이터 구조에는 다음 영상 정보를 참조할 수 있어야 한다.
+    int makeTime() {
+        Random rd = new Random();
+        return rd.nextInt(15) + 1;
+    }
 
-## 사전지식
-
-- 연결리스트와 연속 배열의 차이점
-
-## 기능
-
-- id값(8자리)
-- 제목(8자리)
-- 시간(8자리 이내, 초단위)
-- 다음 정보와 연결
-
-
-
-## Main
-- [ ] 
-
+    void print() {//형식 출력
+        System.out.println(title + "(" + id + "):" + time + "초");
+    }
+}
+```
+- 필드 : title, id, time, next(다음노드)
+- 메서드 : makeId, makeTime, print
+- 생성자(매개변수 title, next)를 통해 title, makeId, makeTime, next (인스턴스 초기화)
+- makeId 메서드
+  - Random 객체 생성
+  - 8자리의 무작위 알파벳을 StringBuilder를 통해 입력
+  - idVerification(HashSet)에 저장되어 있지 않은 아이디라면 저장
+  - idVerification(HashSet)에 저장된 아이디라면 다시 생성
+- makeTime 메서드
+  - Random 객체 생성
+  - 1~15 사이의 랜덤 정수 리턴
+- print 메서드
+  - 리스트 형식대로 출력
+---
