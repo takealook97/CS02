@@ -110,17 +110,15 @@ delete tobedeleted;
 ## Main 클래스
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String[] titles = {"제목01", "제목02", "제목03", "제목04", "제목05", "제목06",
-                "제목07", "제목08", "제목09", "제목10", "제목11", "제목12", "제목13"};
-        LinkedHashMap<String, Node> videoMap = new LinkedHashMap<>();
-        for (int i = 0; i < 13; i++) {
-            Node newNode = new Node(titles[i], null);
-            videoMap.put(newNode.id, newNode);
-        }
-        System.out.println("---영상클립---");
-        for (Node node : videoMap.values()) {
-            node.print();
+  public static void main(String[] args) {
+    String[] titles = {"제목01", "제목02", "제목03", "제목04", "제목05", "제목06",
+            "제목07", "제목08", "제목09", "제목10", "제목11", "제목12", "제목13"};
+    LinkedHashMap<String, Node> movieList = new LinkedHashMap<>();
+    System.out.println("---영상클립 생성---");
+    for (int i = 0; i < 13; i++) {
+      Node newNode = new Node(titles[i], null);
+      movieList.put(newNode.id, newNode);
+      newNode.print();
         }
     }
 }
@@ -133,57 +131,176 @@ public class Main {
 ## Node 클래스
 ```java
 public class Node {
-    String title;
-    String id;
-    int time;
-    Node next;
-    HashSet<String> idVerification = new HashSet<>();
 
-    public Node(String title, Node next) {
-        this.title = title;
-        id = makeId();
-        time = makeTime();
-        this.next = next;
-    }
+  String title;
+  String id;
+  int time;
+  Node next;
+  HashSet<String> idVerify = new HashSet<>();
 
-    String makeId() {
-        Random rd = new Random();
-        while (true) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 8; i++) {
-                int alphabet = rd.nextInt(26) + 'a';
-                sb.append((char) alphabet);
-            }
-            if (!idVerification.contains(sb.toString())) {
-                idVerification.add(sb.toString());
-                return sb.toString();
-            }
-        }
-    }
+  public Node(String title, Node next) {
+    this.title = title;
+    id = makeId();
+    time = makeTime();
+    this.next = next;
+  }
 
-    int makeTime() {
-        Random rd = new Random();
-        return rd.nextInt(15) + 1;
+  String makeId() {
+    Random rd = new Random();
+    while (true) {
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < 8; i++) {
+        int alphabet = rd.nextInt(26) + 'a';
+        sb.append((char) alphabet);
+      }
+      if (!idVerify.contains(sb.toString())) {
+        idVerify.add(sb.toString());
+        return sb.toString();
+      }
     }
+  }
 
-    void print() {//형식 출력
-        System.out.println(title + "(" + id + "):" + time + "초");
-    }
+  int makeTime() {
+    Random rd = new Random();
+    return rd.nextInt(15) + 1;
+  }
+
+  void print() {
+    System.out.println(title + "(" + id + "):" + time + "초");
+  }
 }
 ```
 - 필드 : title, id, time, next(다음노드)
 - 메서드 : makeId, makeTime, print
-- 생성자(매개변수 title, next)를 통해 title, makeId, makeTime, next (인스턴스 초기화)
+- 생성자(매개변수 title, next)를 통해 title, makeId, makeTime, next 인스턴스 초기화
 - makeId 메서드
   - Random 객체 생성
   - 8자리의 무작위 알파벳을 StringBuilder를 통해 입력
-  - idVerification(HashSet)에 저장되어 있지 않은 아이디라면 저장
-  - idVerification(HashSet)에 저장된 아이디라면 다시 생성
+  - Hashset은 동일한 key값을 가질 수 없기 때문에 중복제거에 유리하다.
+  - idVerify(HashSet)에 저장되어 있지 않은 아이디라면 저장
+  - idVerify(HashSet)에 저장된 아이디라면 다시 생성
 - makeTime 메서드
   - Random 객체 생성
   - 1~15 사이의 랜덤 정수 리턴
 - print 메서드
   - 리스트 형식대로 출력
 ---
-# Mission 1. 참조, 연속배열, 데이터구조
-## Main 클래스
+# Mission 2. 노드 추가, 연결리스트, 노드 탐색, 노드 삭제
+## PrintedList 클래스
+### 필드
+```java
+public class PrintedList {
+    Node head;
+    int totalLength;
+    int totalTime;
+```
+- 헤드 노드와 총 길이, 총 시간 필드 생성
+- 
+### getTailNode 메서드
+```java
+Node getTailNode() {
+    Node curNode = head;
+    while (curNode.next != null) {
+        curNode = curNode.next;
+    }
+    return curNode;
+}
+```
+- curNode 변수에 헤드를 지정
+- curNode를 next로 지정하면서 next가 null일때까지 반복(맨 끝까지)
+- 리턴한 curNode는 마지막 노드를 가리키게 된다.
+
+### add 메서드
+```java
+    void add(Node addNode) {
+        if (head == null) {
+            head = addNode;
+            totalLength = 1;
+        } else {
+            Node tailNode = getTailNode();
+            tailNode.next = addNode;
+            totalLength++;
+        }
+        totalTime += addNode.time;
+    }
+```
+- 헤드 노드가 비어있을 경우와 비어있지 않을 경우 2가지 존재
+- 비어있을 경우 헤드노드에 추가할 노드를 지정해줌
+- 비어있지 않을 경우 getTailNode메서드를 통해 구한 마지막 노드의 next에 추가할 노드를 지정해준다.
+
+### delete 메서드
+```java
+    void delete(Node delNode) {
+        if (head.id.equals(delNode.id)) {
+            head = head.next;
+        } else {
+            Node prevNode = head;
+            Node curNode = head.next;
+            while (curNode != null) {
+                if (!curNode.id.equals(delNode.id)) {
+                    prevNode = curNode;
+                    curNode = curNode.next;
+                } else {
+                    prevNode.next = curNode.next;
+                    break;
+                }
+            }
+        }
+        totalLength--;
+        totalTime -= delNode.time;
+    }
+```
+- 헤드 노드를 삭제할 경우와 헤드노드가 아닌 다른 노드를 삭제할 경우 2가지 존재
+- 헤드 노드를 삭제할 경우 헤드를 헤드의 next로 넘겨주기만 하면 된다.
+- 다른 노드를 삭제할 경우 반복문을 통해 삭제할 노드까지 접근을 한 뒤 prevNode.next를 curNode.next로 연결
+  - prevNode - curNode(prevNode.next) - curNode.next 구조에서 중간을 없애고 prevNode와 curNode를 연결하는 구조
+
+
+```java    
+    void insert(Node insNode, int position) {//처음,중간,끝 세 경우로 나누기
+        if (position == 0) {//맨 앞에 삽입할 경우
+            Node temp = head;//기존의 헤드노드를 temp 변수에 저장
+            head = insNode;//헤드노드에는 새로 추가될 노드 지정
+            head.next = temp;//헤드의 next에 기존의 헤드노드였던 temp 연결
+        } else if (position >= totalLength) {//맨 뒤에 삽입할 경우(or 사이즈보다 큰 위치에 삽입명령이 올 경우)
+            Node tailNode = getTailNode();//getTailNode 메서드를 통해 찾은 마지막 노드
+            tailNode.next = insNode;
+        } else {//중간에 삽입할 경우
+            Node curNode = head;
+            int count = 1;
+            while (position != count) {//position만큼 반복하여 삽입 위치까지 이동
+                curNode.next = curNode;
+                count++;
+            }
+            Node temp = curNode.next;//temp 변수에 curNode.next 저장
+            curNode.next = insNode;
+            insNode.next = temp;//curNode - newNode - temp 형식으로 삽입
+        }
+        totalLength++;
+        totalTime += insNode.time;
+    }
+```
+
+```java
+    void render() {
+        System.out.println("영상클립: " + totalLength + "개");
+        System.out.println("전체길이: " + totalTime + "sec");
+    }
+```
+
+```java
+    void print() {//출력형식
+        Node curNode = head;
+        System.out.print("|---");
+        while (curNode != null) {//끝까지 반복
+            System.out.print("[" + curNode.id + "," + curNode.time + "sec" + "]---");
+            curNode = curNode.next;
+        }
+        System.out.println("[end]");
+    }
+
+    void error() {
+        System.out.println("node not found");
+    }
+}
+```
