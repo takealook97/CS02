@@ -2,11 +2,11 @@ import java.util.HashSet;
 import java.util.Random;
 
 public class Node {
-    static HashSet<String> idVerification = new HashSet<>();
-    String id;
     String title;
+    String id;
     int time;
     Node next;
+    HashSet<String> idVerification = new HashSet<>();
 
     public Node(String title, Node next) {
         this.title = title;
@@ -15,40 +15,34 @@ public class Node {
         this.next = next;
     }
 
-    public Node(String id, String title, int time, Node next) {
-        this.id = id;
+    public Node(String title, String id, int time, Node next) {
         this.title = title;
+        this.id = id;
         this.time = time;
         this.next = next;
     }
 
-    void print() {//형식 출력
-        System.out.println(title + "(" + id + "):" + time + "초");
-    }
-
-    String makeId() {//랜덤으로 8자리 알파벳 아이디 생성
+    String makeId() {
         Random rd = new Random();
-        String newId = "";
         while (true) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < 8; i++) {
-                sb.append((char) (rd.nextInt(26) + 'a'));
+                int alphabet = rd.nextInt(26) + 'a';
+                sb.append((char) alphabet);
             }
-            if (!idVerification.contains(sb.toString())) {//중복방지
+            if (!idVerification.contains(sb.toString())) {
                 idVerification.add(sb.toString());
-                newId = sb.toString();
-                break;
+                return sb.toString();
             }
         }
-        return newId;
     }
 
-    int makeTime() {//랜덤으로 1~15초 생성
+    int makeTime() {
         Random rd = new Random();
         return rd.nextInt(15) + 1;
     }
 
-    Node copy() {//저장
-        return new Node(id, title, time, null);
+    void print() {//형식 출력
+        System.out.println(title + "(" + id + "):" + time + "초");
     }
 }

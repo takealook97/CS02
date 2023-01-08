@@ -17,49 +17,45 @@ public class Main {
         for (Node node : videoMap.values()) {
             node.print();
         }
-//------------------------------------------------------------------------------------
-        MyList list = new MyList();
+        //----------------------------------------------------------------------------
+        MyList list = new MyList();//MyList 객체생성
         while (true) {
             System.out.print("> ");
-            String[] input = br.readLine().split(" ");
-            switch (input[0]) {
-                case "add": {
-                    if (videoMap.containsKey(input[1])) {//생성된 id일 때
-                        list.add(videoMap.get(input[1]).copy());
-                        list.print();
-                    } else {//생성되지 않은 id일 경우 에러
-                        list.printError();
+            String[] input = br.readLine().split(" ");//스페이스바를 기준으로 입력을 input배열에 넣어줌
+            switch (input[0]) {//input[0] = 명령 / input [1] = id / input [3] = insert 위치
+                case "add":
+                    if (videoMap.containsKey(input[1])) {//id가 해시맵(출력된아이디)에 있는 key값일 경우
+                        list.add(videoMap.get(input[1]));//list에 add
+                        list.print();//출력
+                    } else {//id가 해시맵(출력된아이디)에 없는 key값일 경우
+                        list.printError();//에러
                     }
                     break;
-                }
-                case "insert": {
-                    if (videoMap.containsKey(input[1])) {
-                        list.insert(videoMap.get(input[1]).copy(), Integer.parseInt(input[2]));
+                case "insert":
+                    if (videoMap.containsKey(input[1])) {//id가 해시맵(출력된아이디)에 있는 key값일 경우
+                        list.insert(videoMap.get(input[1]), Integer.parseInt(input[2]));//입력 위치에 insert
                         list.print();
                     } else {
                         list.printError();
                     }
                     break;
-                }
-                case "delete": {
-                    if (videoMap.containsKey(input[1])) {
-                        int prevSize = list.size;
-                        list.delete(videoMap.get(input[1]));
-                        if (list.size != prevSize)
+                case "delete":
+                    if (videoMap.containsKey(input[1])) {//id가 해시맵(출력된아이디)에 있는 key값일 경우
+                        int prevTotalLength = list.totalLength;//prevTotalLength에 기존의 영상길이 저장
+                        list.delete(videoMap.get(input[1]));//list에서 delete
+                        if (list.totalLength != prevTotalLength) {//영상길이가 줄어들었다면
                             list.print();
-                        else
-                            list.printError();
-                    } else {
-                        list.printError();
+                        } else {//해시맵(출력된아이디)에 있지만 list에 없는 id를 지우라는 명령일 때
+                            list.printError();//영상길이가 줄어들 지 않았을 것이므로 에러 출력
+                        }
+                    } else {//id가 해시맵(출력된아이디)에 없는 key값일 경우
+                        list.printError();//에러
                     }
                     break;
-                }
-                case "render": {
-                    System.out.println("영상클립: " + list.size + "개");
-                    System.out.println("전체길이: " + list.totalTime + "sec");
+                case "render":
+                    list.render();
                     break;
-                }
-                default: {
+                default: {//case에 있는 명령이 아닐 경우
                     System.out.println("잘못된 명령어입니다.");
                 }
             }

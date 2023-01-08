@@ -185,3 +185,5 @@ public class Node {
 - print 메서드
   - 리스트 형식대로 출력
 ---
+# Mission 1. 참조, 연속배열, 데이터구조
+## Main 클래스
