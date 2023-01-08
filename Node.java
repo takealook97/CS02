@@ -2,23 +2,17 @@ import java.util.HashSet;
 import java.util.Random;
 
 public class Node {
+
     String title;
     String id;
     int time;
     Node next;
-    HashSet<String> idVerification = new HashSet<>();
+    HashSet<String> idVerify = new HashSet<>();
 
     public Node(String title, Node next) {
         this.title = title;
         id = makeId();
         time = makeTime();
-        this.next = next;
-    }
-
-    public Node(String title, String id, int time, Node next) {
-        this.title = title;
-        this.id = id;
-        this.time = time;
         this.next = next;
     }
 
@@ -30,8 +24,8 @@ public class Node {
                 int alphabet = rd.nextInt(26) + 'a';
                 sb.append((char) alphabet);
             }
-            if (!idVerification.contains(sb.toString())) {
-                idVerification.add(sb.toString());
+            if (!idVerify.contains(sb.toString())) {
+                idVerify.add(sb.toString());
                 return sb.toString();
             }
         }
@@ -42,7 +36,7 @@ public class Node {
         return rd.nextInt(15) + 1;
     }
 
-    void print() {//형식 출력
+    void print() {
         System.out.println(title + "(" + id + "):" + time + "초");
     }
 }
