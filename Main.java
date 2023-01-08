@@ -18,13 +18,15 @@ public class Main {
         PrintedList list = new PrintedList();//PrintedList 객체생성
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println();
+        System.out.println("order : [add id], [delete id], [insert id position-number], [render], [close]");
+        out:
         while (true) {
             System.out.print("> ");
             String order[] = br.readLine().split(" ");//스페이스바를 기준으로 입력을 input배열에 넣어줌
             switch (order[0]) {//order[0] = 명령 / order[1] = id / order[3] = insert 위치
                 case "add":
                     if (movieList.containsKey(order[1])) {//id가 해시맵(출력된아이디)에 있는 key값일 경우
-                        list.add(movieList.get(order[1]));//list에 add
+                        list.add(movieList.get(order[1]).copy());//list에 add하면 해시맵이 참조되어 영향을 주기때문에 copy메서드 사용
                         list.print();//출력
                     } else {//id가 해시맵(출력된아이디)에 없는 key값일 경우
                         list.error();//에러
@@ -45,13 +47,16 @@ public class Main {
                     break;
                 case "insert":
                     if (movieList.containsKey(order[1])) {//id가 해시맵(출력된아이디)에 있는 key값일 경우
-                        list.insert(movieList.get(order[1]), Integer.parseInt(order[2]));//입력 위치에 insert
+                        list.insert(movieList.get(order[1]).copy(), Integer.parseInt(order[2]));//입력 위치에 insert
                         list.print();
                     } else list.error();
                     break;
                 case "render":
                     list.render();
                     break;
+                case "close":
+                    System.out.println("---end---");
+                    break out;
                 default:
                     System.out.println("command is wrong");
             }

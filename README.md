@@ -136,7 +136,7 @@ public class Node {
   String id;
   int time;
   Node next;
-  HashSet<String> idVerify = new HashSet<>();
+  static HashSet<String> idVerify = new HashSet<>();
 
   public Node(String title, Node next) {
     this.title = title;
@@ -233,6 +233,8 @@ Node getTailNode() {
     void delete(Node delNode) {
         if (head.id.equals(delNode.id)) {
             head = head.next;
+            totalLength--;
+            totalTime -= node.time;
         } else {
             Node prevNode = head;
             Node curNode = head.next;
@@ -242,6 +244,8 @@ Node getTailNode() {
                     curNode = curNode.next;
                 } else {
                     prevNode.next = curNode.next;
+                    totalLength--;
+                    totalTime -= node.time;
                     break;
                 }
             }
@@ -255,32 +259,39 @@ Node getTailNode() {
 - 다른 노드를 삭제할 경우 반복문을 통해 삭제할 노드까지 접근을 한 뒤 prevNode.next를 curNode.next로 연결
   - prevNode - curNode(prevNode.next) - curNode.next 구조에서 중간을 없애고 prevNode와 curNode를 연결하는 구조
 
-
+### insert 메서드
 ```java    
-    void insert(Node insNode, int position) {//처음,중간,끝 세 경우로 나누기
-        if (position == 0) {//맨 앞에 삽입할 경우
-            Node temp = head;//기존의 헤드노드를 temp 변수에 저장
-            head = insNode;//헤드노드에는 새로 추가될 노드 지정
-            head.next = temp;//헤드의 next에 기존의 헤드노드였던 temp 연결
-        } else if (position >= totalLength) {//맨 뒤에 삽입할 경우(or 사이즈보다 큰 위치에 삽입명령이 올 경우)
-            Node tailNode = getTailNode();//getTailNode 메서드를 통해 찾은 마지막 노드
+    void insert(Node insNode, int position) {
+        if (position == 0) {
+            Node temp = head;
+            head = insNode;
+            head.next = temp;
+        } else if (position >= totalLength) {
+            Node tailNode = getTailNode();
             tailNode.next = insNode;
-        } else {//중간에 삽입할 경우
+        } else {
             Node curNode = head;
             int count = 1;
-            while (position != count) {//position만큼 반복하여 삽입 위치까지 이동
+            while (position != count) {
                 curNode.next = curNode;
                 count++;
             }
-            Node temp = curNode.next;//temp 변수에 curNode.next 저장
+            Node temp = curNode.next;
             curNode.next = insNode;
-            insNode.next = temp;//curNode - newNode - temp 형식으로 삽입
+            insNode.next = temp;
         }
         totalLength++;
         totalTime += insNode.time;
     }
 ```
+- 맨 앞, 중간, 맨 뒤에 삽입 할 경우 3가지
+- 맨 앞에 삽입할 경우 기존의 헤드노드를 temp 변수에 저장한 뒤, 헤드 노드에 새로 추가될 노드 지정
+- 헤드의 next에 기존의 헤드노드였던 temp를 연결한다.
+- 맨 뒤에 삽입할 경우 getTailNode 메서드를 통해 찾은 마지막 노드의 next에 삽입할 노드를 연결한다.
+- 중간에 삽입할 경우 position 만큼 반복하여 삽입 위치까지 이동한 뒤
+- temp 변수에 curNode.next를 저장해서 curNode - newNode - temp 구조로 삽입한다.
 
+### render 메서드
 ```java
     void render() {
         System.out.println("영상클립: " + totalLength + "개");
@@ -288,11 +299,12 @@ Node getTailNode() {
     }
 ```
 
+### print 메서드
 ```java
     void print() {//출력형식
         Node curNode = head;
         System.out.print("|---");
-        while (curNode != null) {//끝까지 반복
+        while (curNode != null) {
             System.out.print("[" + curNode.id + "," + curNode.time + "sec" + "]---");
             curNode = curNode.next;
         }
@@ -304,3 +316,100 @@ Node getTailNode() {
     }
 }
 ```
+
+## Node 클래스 추가
+```java
+    public Node(String title, String id, int time, Node next) {
+        this.title = title;
+        this.id = id;
+        this.time = time;
+        this.next = next;
+    }
+    Node copy() {
+        return new Node(title, id, time, null);
+    }
+```
+- Main클래스의 해시맵 참조 시 
+  - 참조자료형은 실제 데이터 값은 힙 메모리에 저장
+  - **스택메모리의 변수 공간에는 실제 변수값이 저장된 힙 메모리의 위치값을 저장한다.**
+- 즉, 영향을 주기 때문에 copy메서드를 사용한다.
+- copy 메서드를 사용하기 위해 새로운 생성자를 만든다.
+
+## Main 클래스 추가
+### 명령어 입력 틀
+```java
+    PrintedList list = new PrintedList();
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    System.out.println();
+    System.out.println("order : [add id], [delete id], [insert id position-number], [render], [close]");
+    out:
+    while (true) {
+      System.out.print("> ");
+      String order[] = br.readLine().split(" ");
+```
+- 버퍼 리더로 입력 -> 스페이스바를 기준으로 order배열 생성
+
+### switch 구문을 통한 case 분리
+### add
+```java        
+      switch (order[0]) {
+        case "add":
+          if (movieList.containsKey(order[1])) {
+            list.add(movieList.get(order[1]).copy());
+            list.print();
+          } else {
+            list.error();
+          }
+          break;
+```
+- 리스트(해시맵)에 있는 키값이면 copy메서드를 통해 추가 후 출력
+- 아닐 경우 에러 출력
+### delete
+```java
+        case "delete":
+          if (movieList.containsKey(order[1])) {
+            int prevTotalLength = list.totalLength;
+            list.delete(movieList.get(order[1]));
+            if (prevTotalLength != list.totalLength) {
+              list.print();
+            } else {
+              list.error();
+            }
+          } else {
+            list.error();
+          }
+          break;
+```
+- 리스트(해시맵)에 있는 키값이면
+  - 총 길이에 변화가 있는지에 따라 삭제 후 출력 or 에러출력
+- 아닐 경우 에러출력
+### insert
+```java
+        case "insert":
+          if (movieList.containsKey(order[1])) {
+            list.insert(movieList.get(order[1]).copy(), Integer.parseInt(order[2]));
+            list.print();
+          } else list.error();
+          break;
+```
+- 리스트(해시맵)에 있는 키값이면 copy메서드를 통해 삽입 후 출력
+- 아닐 경우 에러 출력
+### render & close & default 
+```java
+        case "render":
+          list.render();
+          break;
+        case "close":
+          System.out.println("---end---");
+          break out;
+        default:
+          System.out.println("command is wrong");
+      }
+    }
+  }
+}
+
+```
+- render일 경우 render 메서드에 따라 영상클립과 전체시간 출력
+- close일 경우 레이블을 break함으로써 종료
+- default일 경우 위에 나열한 case가 아닐 시 출력
