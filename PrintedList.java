@@ -18,6 +18,8 @@ public class PrintedList {
     void delete(Node node) {
         if (head.id.equals(node.id)) {//헤드노드가 지울 노드일 경우
             head = head.next;//헤드노드의 next로 헤드를 넘겨준다
+            totalLength--;
+            totalTime -= node.time;
         } else {//헤드노드가 아닌 다른 노드가 지울 노드일 경우
             Node prevNode = head;//prevNode 변수에 head 저장
             Node curNode = head.next;//curNode 변수에 head.next 저장
